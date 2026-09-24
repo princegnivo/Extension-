@@ -1,0 +1,130 @@
+* {
+  box-sizing: border-box;
+}
+body {
+  width: 300px;
+  margin: 0;
+  padding: 0 0 12px;
+  font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+  background: #0a0c10;
+  color: #e5e7eb;
+}
+header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 14px;
+  background: #12151c;
+  border-bottom: 1px solid #262b36;
+  position: sticky;
+  top: 0;
+}
+header h1 {
+  margin: 0;
+  font-size: 14px;
+}
+.dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: #f59e0b;
+  box-shadow: 0 0 8px #f59e0b;
+}
+section {
+  padding: 12px 14px;
+  border-bottom: 1px solid #1a1e27;
+}
+section h2 {
+  margin: 0 0 10px;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #9ca3af;
+}
+label {
+  display: block;
+  font-size: 12px;
+  color: #cbd5e1;
+  margin-bottom: 12px;
+}
+label span {
+  float: right;
+  color: #f59e0b;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+input[type="range"] {
+  width: 100%;
+  margin-top: 6px;
+  accent-color: #f59e0b;
+}
+input[type="text"] {
+  width: 100%;
+  margin-top: 4px;
+  padding: 6px 8px;
+  background: #12151c;
+  border: 1px solid #262b36;
+  border-radius: 6px;
+  color: #e5e7eb;
+  font-size: 12px;
+}
+.switch {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.switch input {
+  width: auto;
+  accent-color: #10b981;
+}
+.hint {
+  margin: 4px 0 0;
+  font-size: 10px;
+  color: #6b7280;
+}
+.warn {
+  margin: 8px 0 0;
+  font-size: 10px;
+  line-height: 1.4;
+  color: #fcd34d;
+  background: rgba(245, 158, 11, 0.08);
+  border: 1px solid rgba(245, 158, 11, 0.2);
+  border-radius: 6px;
+  padding: 6px 8px;
+}
+details {
+  padding: 10px 14px;
+  border-bottom: 1px solid #1a1e27;
+}
+summary {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #9ca3af;
+  cursor: pointer;
+}
+details label {
+  margin-top: 10px;
+}
+footer {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 14px 0;
+}
+footer button {
+  padding: 7px 12px;
+  background: #12151c;
+  border: 1px solid #262b36;
+  border-radius: 8px;
+  color: #e5e7eb;
+  font-size: 12px;
+  cursor: pointer;
+}
+footer button:hover {
+  background: #1a1e27;
+}
+#status {
+  font-size: 12px;
+  color: #10b981;
+}

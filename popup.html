@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="popup.css" />
+    <title>PO Strategy</title>
+  </head>
+  <body>
+    <header>
+      <span class="dot"></span>
+      <h1>RSI 5s + Martingale</h1>
+    </header>
+
+    <section>
+      <h2>Stratégie RSI</h2>
+      <label>Période RSI <span id="rsiPeriodVal"></span>
+        <input type="range" id="rsiPeriod" min="2" max="30" step="1" />
+      </label>
+      <label>Surachat (PUT) <span id="overboughtVal"></span>
+        <input type="range" id="overbought" min="55" max="95" step="1" />
+      </label>
+      <label>Survente (CALL) <span id="oversoldVal"></span>
+        <input type="range" id="oversold" min="5" max="45" step="1" />
+      </label>
+      <label>Pourcentage d'ombre <span id="shadowPercentVal"></span>
+        <input type="range" id="shadowPercent" min="0" max="80" step="1" />
+      </label>
+      <p class="hint">0 % = filtre de mèche désactivé.</p>
+    </section>
+
+    <section>
+      <h2>Martingale</h2>
+      <label>Mise de base ($) <span id="baseAmountVal"></span>
+        <input type="range" id="baseAmount" min="1" max="500" step="1" />
+      </label>
+      <label>Multiplicateur <span id="multiplierVal"></span>
+        <input type="range" id="multiplier" min="1.5" max="3" step="0.1" />
+      </label>
+      <label>Paliers max <span id="maxStepsVal"></span>
+        <input type="range" id="maxSteps" min="0" max="6" step="1" />
+      </label>
+      <label>Rendement (%) <span id="payoutVal"></span>
+        <input type="range" id="payout" min="50" max="100" step="1" />
+      </label>
+    </section>
+
+    <section>
+      <h2>Exécution</h2>
+      <label class="switch">
+        <input type="checkbox" id="autoTrade" />
+        <span>Auto-trade (clique CALL / PUT)</span>
+      </label>
+      <label class="switch">
+        <input type="checkbox" id="demoOnly" />
+        <span>Compte démo uniquement</span>
+      </label>
+      <p class="warn">
+        L'auto-trade en argent réel peut enfreindre les CGU de Pocket Option et présente un risque élevé de perte.
+        Recommandé : compte démo.
+      </p>
+    </section>
+
+    <details>
+      <summary>Sélecteurs avancés</summary>
+      <label>Bouton CALL <input type="text" id="callSelector" placeholder="rempli via « Choisir un élément »" /></label>
+      <label>Bouton PUT <input type="text" id="putSelector" placeholder="rempli via « Choisir un élément »" /></label>
+      <label>Libellé compte démo <input type="text" id="demoLabelSelector" /></label>
+      <label>Nom événement Socket.IO (prix) <input type="text" id="wsEventName" placeholder="ex: quotes" /></label>
+      <label>Champ contenant le prix <input type="text" id="wsPriceField" placeholder="price" /></label>
+      <p class="hint">Trouve ces valeurs via le panneau « Découverte » dans l'overlay de la page.</p>
+    </details>
+
+    <footer>
+      <button id="reset">Réinitialiser</button>
+      <span id="status"></span>
+    </footer>
+
+    <script src="strategy.js"></script>
+    <script src="popup.js"></script>
+  </body>
+</html>
