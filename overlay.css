@@ -46,6 +46,7 @@
 }
 #po-strategy-overlay.min .pos-body { display: none; }
 #po-strategy-overlay .pos-body { padding: 10px 12px 12px; }
+#po-strategy-overlay .pos-pick-zone { padding: 8px 12px; border-bottom: 1px solid #1a1e27; }
 #po-strategy-overlay .pos-row {
   display: flex;
   justify-content: space-between;
@@ -106,7 +107,6 @@
 
 #po-strategy-overlay #pos-pick {
   width: 100%;
-  margin-top: 10px;
   padding: 8px 0;
   border: 1px dashed #f59e0b;
   border-radius: 8px;
