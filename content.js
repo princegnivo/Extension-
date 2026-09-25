@@ -226,6 +226,10 @@
     root.innerHTML =
       '<div class="pos-head"><span class="pos-dot"></span><strong>RSI 5s + Martingale</strong>' +
       '<button id="pos-min" title="Réduire">–</button></div>' +
+      '<div class="pos-pick-zone">' +
+      '<button id="pos-pick">Choisir un élément</button>' +
+      '<div id="pos-picked" style="display:none"></div>' +
+      "</div>" +
       '<div class="pos-body">' +
       '<div class="pos-row"><span>RSI</span><b id="pos-rsi">—</b></div>' +
       '<div class="pos-row"><span>Signal</span><b id="pos-signal">En attente…</b></div>' +
@@ -238,8 +242,6 @@
       '<div class="pos-note">Compte démo uniquement recommandé.</div>' +
       '<details class="pos-discover"><summary>Découverte Socket.IO (<span id="pos-disc-count">0</span>)</summary>' +
       '<div id="pos-disc-list"></div></details>' +
-      '<button id="pos-pick">Choisir un élément</button>' +
-      '<div id="pos-picked" style="display:none"></div>' +
       "</div>";
     document.body.appendChild(root);
 
