@@ -97,5 +97,97 @@
   PatchedWebSocket.prototype = NativeWebSocket.prototype;
   window.WebSocket = PatchedWebSocket;
 
+  // ---------- Interception au niveau des Web Workers ----------
+  // Beaucoup de plateformes ouvrent leur WebSocket dans un Worker dédié
+  // (hors thread principal). Le patch ci-dessus ne peut pas le voir : il
+  // faut injecter un patch équivalent DANS le worker lui-même. On
+  // intercepte donc la création du Worker, on récupère son code source,
+  // on lui ajoute notre patch en préambule, puis on le relance via un
+  // Blob. Le worker patché relaie ensuite les trames via BroadcastChannel
+  // (le seul canal simple entre un worker et la page principale qui ne
+  // perturbe pas la communication postMessage propre à l'application).
+  const WORKER_PATCH = [
+    "(function(){",
+    "  try {",
+    "    var bc = new BroadcastChannel('po-strategy-bridge');",
+    "    var seen = {};",
+    "    function post(type, data) { try { bc.postMessage(Object.assign({ type: type }, data)); } catch (e) {} }",
+    "    function parseFrame(raw) {",
+    "      if (typeof raw !== 'string') return null;",
+    "      var m = raw.match(/^(\\d+)([\\s\\S]*)$/);",
+    "      if (!m) return null;",
+    "      var prefix = m[1], rest = m[2];",
+    "      if (prefix === '42' || prefix === '43') {",
+    "        try {",
+    "          var arr = JSON.parse(rest);",
+    "          if (Array.isArray(arr) && typeof arr[0] === 'string') return { event: arr[0], payload: arr[1] };",
+    "        } catch (e) {}",
+    "      }",
+    "      return null;",
+    "    }",
+    "    var NativeWS = self.WebSocket;",
+    "    function PatchedWS(url, protocols) {",
+    "      var ws = protocols ? new NativeWS(url, protocols) : new NativeWS(url);",
+    "      ws.addEventListener('message', function (ev) {",
+    "        var parsed = parseFrame(ev.data);",
+    "        if (!parsed) return;",
+    "        if (!seen[parsed.event]) {",
+    "          seen[parsed.event] = true;",
+    "          post('discover', { event: parsed.event, sample: JSON.stringify(parsed.payload).slice(0, 500) });",
+    "        }",
+    "        post('raw', { event: parsed.event, payload: parsed.payload });",
+    "      });",
+    "      return ws;",
+    "    }",
+    "    PatchedWS.prototype = NativeWS.prototype;",
+    "    self.WebSocket = PatchedWS;",
+    "  } catch (e) {}",
+    "})();",
+  ].join("\n");
+
+  const NativeWorker = window.Worker;
+  function PatchedWorker(scriptURL, options) {
+    try {
+      const abs = new URL(scriptURL, location.href).href;
+      const xhr = new XMLHttpRequest();
+      xhr.open("GET", abs, false); // synchrone : nécessaire, le constructeur Worker est synchrone
+      xhr.send(null);
+      if (xhr.status >= 200 && xhr.status < 300) {
+        const blob = new Blob([WORKER_PATCH + "\n" + xhr.responseText], { type: "application/javascript" });
+        const blobUrl = URL.createObjectURL(blob);
+        return new NativeWorker(blobUrl, options);
+      }
+    } catch (e) {
+      // Script cross-origin, CSP bloquante, etc. — on retombe sur le Worker natif.
+    }
+    return new NativeWorker(scriptURL, options);
+  }
+  PatchedWorker.prototype = NativeWorker.prototype;
+  window.Worker = PatchedWorker;
+
+  try {
+    const bridge = new BroadcastChannel("po-strategy-bridge");
+    bridge.onmessage = function (ev) {
+      const msg = ev.data;
+      if (!msg) return;
+      if (msg.type === "discover") {
+        if (!seenEvents.has(msg.event)) {
+          seenEvents.add(msg.event);
+          post("PO_STRATEGY_DISCOVER", { event: msg.event, sample: msg.sample });
+        }
+      } else if (msg.type === "raw") {
+        if (config.eventFilter && msg.event === config.eventFilter) {
+          const price = Number(deepFind(msg.payload, config.priceField));
+          if (!Number.isNaN(price) && price > 0) {
+            post("PO_STRATEGY_TICK", { tick: { price: price, time: Date.now() } });
+          }
+        }
+      }
+    };
+  } catch (e) {
+    // BroadcastChannel indisponible dans ce contexte — tant pis, le hook
+    // principal (hors worker) continue de fonctionner seul.
+  }
+
   post("PO_STRATEGY_READY", {});
 })();
